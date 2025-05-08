@@ -9,8 +9,13 @@ export class Gameboard {
     this.missedAttacks = 0;
     this.allShipsSunk = false;
     this.attackedCoordinates = [];
+    this.currentTurn = false;
   }
 
+  switchTurn(){
+    this.currentTurn = !this.currentTurn 
+  }
+  
   placeShip(ship, x, y, direction) {
     const length = ship.length;
 
@@ -46,27 +51,22 @@ export class Gameboard {
     }
     this.attackedCoordinates.push([x, y]);
 
-    const cell = this.board[x][y];
-    if (cell !== null) {
-      const { ship } = cell;
-      ship.hit();
+
+    if (this.board[x][y] !== null) {
+      const { ship, index } = this.board[x][y];
+      ship.hit(index);
       if (ship.isSunk()) {
         this.shipCount--;
         if (this.shipCount === 0) {
           this.allShipsSunk = true;
+          return 'game over'
         }
       }
-      // todo    REMOVE: This should clear cell or mark as hit
-      this.board[x][y] = "X";
       return 'hit';
     } else {
       this.missedAttacks++;
       return 'miss';
     }
-  }
-
-  areAllShipsSunk() {
-    return this.allShipsSunk;
   }
 }
 

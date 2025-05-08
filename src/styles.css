@@ -25,3 +25,70 @@ p, h1, h2, h3, h4, h5, h6 {
 
 /*  Start Here */
 
+.main {
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #333;
+}
+
+.container {
+  width: 1200px;
+  display: flex;
+  margin: auto;
+  height: 100vh;
+  background-color: #555;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+}
+.player-container {
+  width: 500px ;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  outline: 1px solid #fff;
+}
+
+.cell {
+  color: white;
+  aspect-ratio: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  outline: 1px solid #000;
+}
+.cell:hover {
+  background-color: #0404ff33 ;
+}
+
+.patrol,
+.submarine,
+.destroyer,
+.carrier {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.patrol{
+  background-color: #22c
+}
+.submarine{
+  background-color: #292
+}
+.destroyer {
+  background-color: #922
+}
+.carrier {
+  background-color: #992
+}
+
+#player-one-board, #player-two-board {
+  background-color: #fffd;
+}
+
+
+.cell.sunk {
+  background-color: #555;
+}
+
+

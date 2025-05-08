@@ -1,7 +1,7 @@
 export class Ship {
   constructor(length) {
     this.length = length;
-    this.hits = 0;
+    this.hits = new Array(length).fill(false);
     this.sunk = false;
     this.shipType = this.typeOfShip(length);
   }
@@ -14,11 +14,9 @@ export class Ship {
     return 'Unknown';
   }
 
-  hit() {
-    this.hits++;
-    if (this.hits >= this.length) {
-      this.sunk = true;
-    }
+  hit(index) {
+    this.hits[index] = true;
+    this.sunk = this.hits.every((part) => part === true)
   }
 
   isSunk() {
