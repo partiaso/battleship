@@ -14,24 +14,30 @@ export class Player {
     };
   }
 
-  placeAllShips() {
-    try {
-      this.gameboard.placeShip(this.ships.patrolBoats[0], 0, 0, 'vertical');
-      this.gameboard.placeShip(this.ships.patrolBoats[1], 2, 0, 'vertical');
-      this.gameboard.placeShip(this.ships.patrolBoats[2], 4, 0, 'vertical');
-      this.gameboard.placeShip(this.ships.patrolBoats[3], 6, 0, 'vertical');
+  getRandomAttackCoordinates(opponentBoard) {
+    let x, y;
+    do {
+      x = Math.floor(Math.random() * opponentBoard.board.length);
+      y = Math.floor(Math.random() * opponentBoard.board[0].length);
+    } while (
+      opponentBoard.attackedCoordinates.some(([ax, ay]) => ax === x && ay === y)
+    );
+    return [x, y];
+  }
 
-      this.gameboard.placeShip(this.ships.submarines[0], 2, 2, 'horizontal');
-      this.gameboard.placeShip(this.ships.submarines[1], 3, 6, 'horizontal');
-      this.gameboard.placeShip(this.ships.submarines[2], 1, 9, 'vertical');
+  makeComputerMove(opponent) {
+    if (!this.isComputer || !this.gameboard.currentTurn) return;
+    const [x, y] = this.getRandomAttackCoordinates(opponent.gameboard);
+    const result = opponent.gameboard.receiveAttack(x, y);
+    opponent.renderBoard('player-one-board');
 
-      this.gameboard.placeShip(this.ships.destroyers[0], 9, 4, 'horizontal');
-      this.gameboard.placeShip(this.ships.destroyers[1], 6, 2, 'vertical');
-
-      this.gameboard.placeShip(this.ships.carrier[0], 4, 4, 'vertical');
-    } catch (error) {
-      console.error(error.message);
+    if (result === 'game over') {
+      alert(`${this.name} wins!`);
+      return;
     }
+
+    this.gameboard.switchTurn();
+    opponent.gameboard.switchTurn();
   }
 
   renderBoard(containerId) {
@@ -47,7 +53,7 @@ export class Player {
         playerGrid.dataset.col = colIndex;
         if (cell && cell.ship) {
           playerGrid.textContent = cell.ship.shipType[0];
-          if(cell.ship.sunk){
+          if (cell.ship.sunk) {
             playerGrid.classList.add('sunk');
           }
           if (cell.ship.length === 1) {
@@ -79,7 +85,81 @@ export class Player {
       });
     });
   }
+
+  generateShipPlacementForm(containerId = 'form-container') {
+    const container = document.getElementById(containerId);
+    if (!container) {
+      console.warn(`Container with id "${containerId}" not found.`);
+      return;
+    }
+
+    if (!this.ships || Object.keys(this.ships).length === 0) {
+      console.warn('There are no ships defined in this.ships');
+      return;
+    }
+
+    const form = document.createElement('form');
+    form.id = 'ship-placement-form';
+
+    const heading = document.createElement('h3');
+    heading.textContent = 'Place the ships ';
+    form.appendChild(heading);
+
+    for (const type in this.ships) {
+      const shipsArray = this.ships[type];
+      if (!Array.isArray(shipsArray)) continue;
+
+      const group = document.createElement('div');
+      group.classList.add('ship-group');
+
+      const title = document.createElement('h4');
+      title.textContent = `${type} (${shipsArray[0].length} cells)`;
+      group.appendChild(title);
+
+      shipsArray.forEach((ship, index) => {
+        const instanceDiv = document.createElement('div');
+        instanceDiv.classList.add('ship-instance');
+
+        const inputX = document.createElement('input');
+        inputX.type = 'number';
+        inputX.name = `x-${type}-${index}`;
+        inputX.min = 0;
+        inputX.max = 9;
+        inputX.placeholder = 'X';
+        inputX.required = true;
+
+        const inputY = document.createElement('input');
+        inputY.type = 'number';
+        inputY.name = `y-${type}-${index}`;
+        inputY.min = 0;
+        inputY.max = 9;
+        inputY.placeholder = 'Y';
+        inputY.required = true;
+
+        const orientation = document.createElement('select');
+        orientation.name = `orientation-${type}-${index}`;
+        ['horizontal', 'vertical'].forEach((opt) => {
+          const option = document.createElement('option');
+          option.value = opt;
+          option.textContent = opt[0].toUpperCase() + opt.slice(1);
+          orientation.appendChild(option);
+        });
+
+        instanceDiv.appendChild(inputX);
+        instanceDiv.appendChild(inputY);
+        instanceDiv.appendChild(orientation);
+        group.appendChild(instanceDiv);
+      });
+
+      form.appendChild(group);
+    }
+
+    const submitBtn = document.createElement('button');
+    submitBtn.type = 'submit';
+    submitBtn.textContent = 'Start';
+    form.appendChild(submitBtn);
+
+    container.innerHTML = '';
+    container.appendChild(form);
+  }
 }
-
-
-

@@ -16,7 +16,7 @@ export class Ship {
 
   hit(index) {
     this.hits[index] = true;
-    this.sunk = this.hits.every((part) => part === true)
+    this.sunk = this.hits.every((part) => part === true);
   }
 
   isSunk() {

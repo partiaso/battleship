@@ -1,5 +1,3 @@
-import { Ship } from './Ship.js';
-
 export class Gameboard {
   constructor(shipCount = 10) {
     this.board = Array.from({ length: 10 }, () =>
@@ -12,10 +10,10 @@ export class Gameboard {
     this.currentTurn = false;
   }
 
-  switchTurn(){
-    this.currentTurn = !this.currentTurn 
+  switchTurn() {
+    this.currentTurn = !this.currentTurn;
   }
-  
+
   placeShip(ship, x, y, direction) {
     const length = ship.length;
 
@@ -45,12 +43,10 @@ export class Gameboard {
   }
 
   receiveAttack(x, y) {
-
     if (this.attackedCoordinates.some(([ax, ay]) => ax === x && ay === y)) {
       throw new Error('This cell has already been attacked.');
     }
     this.attackedCoordinates.push([x, y]);
-
 
     if (this.board[x][y] !== null) {
       const { ship, index } = this.board[x][y];
@@ -59,7 +55,7 @@ export class Gameboard {
         this.shipCount--;
         if (this.shipCount === 0) {
           this.allShipsSunk = true;
-          return 'game over'
+          return 'game over';
         }
       }
       return 'hit';
@@ -68,5 +64,16 @@ export class Gameboard {
       return 'miss';
     }
   }
-}
 
+  updateBoardFocus(containerId) {
+    const boardOne = document.querySelector('#player-one-board');
+    const boardTwo = document.querySelector('#player-two-board');
+    boardOne.classList.remove('active');
+    boardTwo.classList.remove('active');
+    if (containerId === 'player-one-board') {
+      boardOne.classList.add('active');
+    } else if (containerId === 'player-two-board') {
+      boardTwo.classList.add('active');
+    }
+  }
+}
